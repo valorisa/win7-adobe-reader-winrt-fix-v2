@@ -31,8 +31,9 @@ Réparer le plantage d’Adobe Reader (AcroRd32.exe) sur Windows 7 après la mis
 # Depuis le dossier du repo
 choco pack chocolatey\win7-adobe-fix.nuspec
 choco install win7-adobe-fix --source . -y --params="/DLLonly"
+
 # Ou pour le rollback Reader XI :
-# choco install win7-adobe-fix --source . -y --params="/RollbackXI"
+choco install win7-adobe-fix --source . -y --params="/RollbackXI"
 ```
 
 ## Utilisation manuelle (sans Chocolatey)
@@ -69,3 +70,4 @@ win7-adobe-reader-winrt-fix-v2/
 - Support multi-versions Windows 7 / 8.1
 
 Elon approuverait. 😈🚀
+
