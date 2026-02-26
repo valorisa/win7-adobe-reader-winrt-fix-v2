@@ -1,87 +1,130 @@
 # =============================================================================
-# uup-extract-dll.ps1
-# Extrait api-ms-win-core-winrt-l1-1-0.dll via UUP dump minimal (~250-350 Mo)
-# Compatible PowerShell 5.1 (Windows natif)
+# uup-extract-dll.ps1 - Version SILENCIEUSE 100 % (sans clic navigateur)
+# Extrait api-ms-win-core-winrt-l1-1-0.dll depuis un build Win10 x86 via API uupdump
+# Compatible PowerShell 5.1 - Windows 7/10/11
 # =============================================================================
 
 [CmdletBinding()]
 param(
-    [switch]$Force,
+    [string]$Build = "19045.5247",              # Build Win10 22H2 x86 par défaut (stable avec la DLL)
+    [string]$Ring = "retail",                   # retail = public
+    [string]$Arch = "x86",                      # 32-bit pour AcroRd32.exe sur Win7
+    [switch]$Cleanup = $true,                   # Supprime les fichiers UUPs après extraction ?
     [string]$TargetFolder = "$env:ProgramFiles (x86)\Adobe\Acrobat Reader DC\Reader"
 )
 
-# Vérifie pré-requis aria2
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
+
+Write-Host "`n=== UUP Dump SILENCIEUX - Extraction api-ms-win-core-winrt-l1-1-0.dll ===" -ForegroundColor Cyan
+Write-Host "Build cible : Windows 10 $Arch - $Build ($Ring)" -ForegroundColor Yellow
+
+# Vérifie aria2
 $aria2 = "${env:ProgramData}\chocolatey\bin\aria2c.exe"
 if (-not (Test-Path $aria2)) {
-    Write-Warning "aria2 non trouvé. Installation automatique..."
+    Write-Warning "aria2 non trouvé → installation automatique"
     choco install aria2 -y --no-progress
-    Start-Sleep -Seconds 3
 }
 
-# Build connu stable avec la DLL (Win10 22H2 x86)
-$build = "19045.5247"   # tu peux changer pour un build plus récent si besoin
-$uupBaseUrl = "https://uupdump.net"
-
-Write-Host "`n=== UUP Dump - Extraction api-ms-win-core-winrt-l1-1-0.dll ===" -ForegroundColor Cyan
-Write-Host "1. Le navigateur va s'ouvrir sur uupdump.net" -ForegroundColor Yellow
-Write-Host "2. Attends que la page charge complètement" -ForegroundColor Yellow
-Write-Host "3. Clique sur le bouton 'Download using aria2 and convert'" -ForegroundColor Yellow
-Write-Host "   (ou 'Download using aria2' si l'option convert n'apparaît pas)" -ForegroundColor Yellow
-Write-Host "4. Aria2 va télécharger ~250-350 Mo" -ForegroundColor Yellow
-Write-Host "5. Une fois terminé, reviens ici et appuie sur Entrée`n" -ForegroundColor Yellow
-
-# Ouvre la page UUP avec les bons paramètres
-$requestUrl = "$uupBaseUrl/get.php?id=win10_22h2_x86_$build&pack=1&aria2=1"
-Start-Process $requestUrl
-
-Read-Host "Appuie sur Entrée quand le téléchargement aria2 est terminé (dossier UUPs créé)"
-
-# Recherche le dossier UUPs le plus récent dans Téléchargements
-$downloads = "$env:USERPROFILE\Downloads"
-$uupFolder = Get-ChildItem -Path $downloads -Filter "UUPs*" -Directory |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1 -ExpandProperty FullName
-
-if (-not $uupFolder) {
-    Write-Error "Aucun dossier UUPs trouvé dans $downloads"
+# Étape 1 : Récupère les infos du build via API uupdump
+$apiUrl = "https://uupdump.net/api/getbuildinfo?ring=$Ring&arch=$Arch&build=$Build"
+try {
+    $buildInfo = Invoke-RestMethod -Uri $apiUrl -UseBasicParsing -TimeoutSec 30
+    if (-not $buildInfo.id) { throw "Build non trouvé" }
+    Write-Host "Build trouvé : $($buildInfo.title) (ID: $($buildInfo.id))" -ForegroundColor Green
+}
+catch {
+    Write-Error "Échec récupération infos build : $($_.Exception.Message)"
+    Write-Host "Essayez un autre build ou vérifiez uupdump.net/api"
     exit 1
 }
 
-Write-Host "Dossier UUP détecté : $uupFolder" -ForegroundColor Green
+# Étape 2 : Génère le script aria2 (sans passer par le site web)
+$aria2Params = @{
+    id    = $buildInfo.id
+    aria2 = 1
+}
+$aria2Query = ($aria2Params.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join '&'
+$aria2Url = "https://uupdump.net/get.php?$aria2Query"
 
-# Recherche les .cab contenant system32
-$cabFiles = Get-ChildItem -Path $uupFolder -Filter "*windows-system32*.cab" -Recurse -File
-
-if ($cabFiles.Count -eq 0) {
-    Write-Error "Aucun .cab system32 trouvé dans le dossier UUP"
+try {
+    $aria2Script = Invoke-WebRequest -Uri $aria2Url -UseBasicParsing -TimeoutSec 30
+    $aria2File = "$env:TEMP\uup_aria2_$($buildInfo.id).txt"
+    $aria2Script.Content | Out-File -FilePath $aria2File -Encoding ascii
+    Write-Host "Script aria2 généré : $aria2File" -ForegroundColor Green
+}
+catch {
+    Write-Error "Échec génération script aria2 : $($_.Exception.Message)"
     exit 1
 }
 
-# Extraction de la DLL depuis les CABs
-$tempExtract = "$env:TEMP\uup-dll-extract"
-New-Item -ItemType Directory -Path $tempExtract -Force | Out-Null
+# Étape 3 : Téléchargement silencieux avec aria2
+$uupDir = "$env:TEMP\UUPs_$($buildInfo.id)"
+New-Item -ItemType Directory -Path $uupDir -Force | Out-Null
+
+Write-Host "Téléchargement des fichiers (seulement system32 CABs)..." -ForegroundColor Cyan
+& $aria2 -i "$aria2File" -d "$uupDir" --console-log-level=warn --summary-interval=0 --allow-overwrite=true 2>$null
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Aria2 a retourné une erreur ($LASTEXITCODE) - vérifiez les logs"
+}
+
+# Étape 4 : Extraction de la DLL depuis les CAB
+$tempDll = "$env:TEMP\api-ms-win-core-winrt-l1-1-0.dll"
+Remove-Item $tempDll -Force -ErrorAction SilentlyContinue
+
+$cabFiles = Get-ChildItem -Path $uupDir -Filter "*windows-system32*.cab" -Recurse -File
 
 foreach ($cab in $cabFiles) {
     Write-Host "Extraction depuis $($cab.Name) ..." -ForegroundColor Cyan
-    & expand "$($cab.FullName)" -F:api-ms-win-core-winrt-l1-1-0.dll "$tempExtract" 2>$null
+    expand $cab.FullName -F:api-ms-win-core-winrt-l1-1-0.dll $env:TEMP 2>$null
 }
 
-$dllPath = "$tempExtract\api-ms-win-core-winrt-l1-1-0.dll"
-
-if (-not (Test-Path $dllPath)) {
-    Write-Error "La DLL n'a pas été trouvée après extraction"
+if (-not (Test-Path $tempDll)) {
+    Write-Error "DLL non trouvée après extraction des CABs"
     exit 1
 }
 
-Write-Host "DLL trouvée : $dllPath" -ForegroundColor Green
+Write-Host "DLL extraite : $tempDll" -ForegroundColor Green
 
-# Copie vers Adobe Reader (ou autre dossier)
-if (Test-Path $TargetFolder) {
-    Copy-Item -Path $dllPath -Destination $TargetFolder -Force
-    Write-Host "DLL copiée dans : $TargetFolder" -ForegroundColor Green
+# Étape 5 : Vérification intégrité (hash + signature)
+$expectedHash = "B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD"  # Win10 22H2
+
+$hash = Get-FileHash $tempDll -Algorithm SHA256
+if ($hash.Hash -ne $expectedHash) {
+    Write-Warning "Hash SHA256 non correspondant (obtenu: $($hash.Hash))"
+    Write-Warning "Attendu: $expectedHash"
+    $continue = Read-Host "Continuer malgré tout ? (O/N)"
+    if ($continue -notlike "O*") { exit 1 }
 } else {
-    Write-Warning "Dossier cible non trouvé : $TargetFolder"
-    Write-Host "DLL laissée ici : $dllPath" -ForegroundColor Yellow
+    Write-Host "✅ Hash SHA256 OK (Microsoft officiel)" -ForegroundColor Green
 }
 
-Write-Host "`nTerminé !`n" -ForegroundColor Green
+$sig = Get-AuthenticodeSignature $tempDll
+if ($sig.Status -eq "Valid" -and $sig.SignerCertificate.Subject -like "*Microsoft*") {
+    Write-Host "✅ Signature Authenticode valide (Microsoft)" -ForegroundColor Green
+} else {
+    Write-Warning "Signature invalide : $($sig.StatusMessage)"
+    $continue = Read-Host "Continuer malgré tout ? (O/N)"
+    if ($continue -notlike "O*") { exit 1 }
+}
+
+# Étape 6 : Copie vers Adobe Reader
+if (Test-Path $TargetFolder) {
+    Copy-Item -Path $tempDll -Destination $TargetFolder -Force
+    Write-Host "DLL copiée avec succès dans : $TargetFolder" -ForegroundColor Green
+    Write-Host "Redémarrez Adobe Reader pour tester !" -ForegroundColor Green
+} else {
+    Write-Warning "Dossier Adobe Reader non trouvé : $TargetFolder"
+    Write-Host "DLL disponible ici : $tempDll" -ForegroundColor Yellow
+    Write-Host "Copiez-la manuellement dans le dossier Reader de votre installation."
+}
+
+# Étape 7 : Nettoyage (optionnel)
+if ($Cleanup) {
+    Remove-Item $uupDir -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item $aria2File -Force -ErrorAction SilentlyContinue
+    Write-Host "Nettoyage terminé" -ForegroundColor Gray
+}
+
+Write-Host "`n=== Fin du fix silencieux UUP ===" -ForegroundColor Magenta

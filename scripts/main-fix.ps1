@@ -16,9 +16,9 @@ if (-not $isAdmin) {
     Write-Host "Tu peux continuer, mais la copie finale risque d'échouer.`n" -ForegroundColor Yellow
 }
 
-# Étape 1 : Extraction via UUP
-Write-Host "Étape 1/3 : Extraction de la DLL via UUP dump minimal" -ForegroundColor Cyan
-& ".\scripts\uup-extract-dll.ps1"
+# Étape 1 : Extraction silencieuse DLL via UUP
+Write-Host "Étape 1 : Extraction silencieuse DLL via UUP..." -ForegroundColor Cyan
+& ".\scripts\uup-extract-dll.ps1" -Cleanup $true
 
 $dllTempPath = "$env:TEMP\uup-dll-extract\api-ms-win-core-winrt-l1-1-0.dll"
 if (-not (Test-Path $dllTempPath)) {
