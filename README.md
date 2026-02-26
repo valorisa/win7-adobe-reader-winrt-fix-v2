@@ -1,6 +1,6 @@
 # Win7 Adobe Reader WinRT Fix V2 – Full Auto Edition
 
-**Réparez le plantage d’Adobe Reader sur Windows 7** causé par la dépendance à `api-ms-win-core-winrt-l1-1-0.dll` après les mises à jour 2026.
+**Réparez le plantage d’Adobe Reader sur Windows 7** causé par la dépendance à `api-ms-win-core-winrt-l1-1-0.dll` après les mises à jour 2026. Windows 8, 8.1, 10 et 11 ne sont pas concernés. 
 
 [![Chocolatey](https://img.shields.io/chocolatey/v/win7-adobe-fix?color=green&label=Chocolatey)](https://community.chocolatey.org/packages/win7-adobe-fix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -115,3 +115,4 @@ win7-adobe-reader-winrt-fix-v2/
 - Ajout d’un mode « offline » complet (DLL pré-extraite)
 
 Elon approuverait. 😈🚀
+
