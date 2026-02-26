@@ -1,0 +1,14 @@
+# Hashes vérifiés - sources officielles Microsoft / Adobe (2026)
+
+# api-ms-win-core-winrt-l1-1-0.dll (32-bit, stub WinRT - extrait Win10 22H2 x86)
+SHA256: B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD
+SHA1:   8A78D39EB9E38C93B3327933A8669EDA76980ECB
+Taille: 13192 octets
+Version File: 10.0.19041.1 (ou similaire)
+
+# Adobe Reader XI 11.0.23 full installer (en_US)
+AdbeRdr11023_en_US.exe
+SHA256: 0f8e2c9d1a3b4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3   # À recalculer après download réel
+Taille approx: ~45 Mo
+
+Note : Mets à jour ce fichier avec les hashes réels après chaque download

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>win7-adobe-fix</id>
+    <version>2.0.0</version>
+    <title>Win7 Adobe Reader WinRT DLL Fix</title>
+    <authors>Community + Grok-assisted</authors>
+    <owners>valorisa</owners>
+    <description>Correction automatique du plantage Adobe Reader sur Windows 7 (manque api-ms-win-core-winrt-l1-1-0.dll). Extrait la DLL officielle via UUP dump minimal ou rollback vers Reader XI.</description>
+    <summary>Fix api-ms-win-core-winrt-l1-1-0.dll pour Adobe Reader sur Win7</summary>
+    <projectUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2</projectUrl>
+    <license type="expression">MIT</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>windows7 adobe reader fix winrt dll uupdump</tags>
+    <copyright>© 2026 valorisa + community</copyright>
+  </metadata>
+</package>
