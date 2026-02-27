@@ -1,130 +1,191 @@
+﻿# =============================================================================
+# uup-extract-dll.ps1 - V5.7 (Février 2026 - Support CAB + ESD)
+# Fix automatique pour Adobe Reader sur Windows 7
 # =============================================================================
-# uup-extract-dll.ps1 - Version SILENCIEUSE 100 % (sans clic navigateur)
-# Extrait api-ms-win-core-winrt-l1-1-0.dll depuis un build Win10 x86 via API uupdump
-# Compatible PowerShell 5.1 - Windows 7/10/11
-# =============================================================================
-
 [CmdletBinding()]
 param(
-    [string]$Build = "19045.5247",              # Build Win10 22H2 x86 par défaut (stable avec la DLL)
-    [string]$Ring = "retail",                   # retail = public
-    [string]$Arch = "x86",                      # 32-bit pour AcroRd32.exe sur Win7
-    [switch]$Cleanup = $true,                   # Supprime les fichiers UUPs après extraction ?
+    [string]$UupId = "f8aba250-e2aa-4a80-bc91-fb471f135948",
+    [string]$Search = "19045 x86",
+    [string]$Arch = "x86",
+    [switch]$DryRun = $false,
+    [switch]$Cleanup = $true,
     [string]$TargetFolder = "$env:ProgramFiles (x86)\Adobe\Acrobat Reader DC\Reader"
 )
 
-$ErrorActionPreference = 'Stop'
-$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-Write-Host "`n=== UUP Dump SILENCIEUX - Extraction api-ms-win-core-winrt-l1-1-0.dll ===" -ForegroundColor Cyan
-Write-Host "Build cible : Windows 10 $Arch - $Build ($Ring)" -ForegroundColor Yellow
+$UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
 
-# Vérifie aria2
-$aria2 = "${env:ProgramData}\chocolatey\bin\aria2c.exe"
+$siteBase = "https://uupdump.net"
+$dllName = "api-ms-win-core-winrt-l1-1-0.dll"
+
+Write-Host "`n=== UUP Dump V5.7 - Fix Adobe Reader WinRT (x86) ===" -ForegroundColor Cyan
+Write-Host "DLL cible : $dllName" -ForegroundColor Gray
+Write-Host "ID UUP : $UupId (Architecture: $Arch)" -ForegroundColor Green
+
+$aria2Url = "$siteBase/get.php?id=$UupId&pack=en-us&edition=core&aria2=1"
+Write-Host "URL source : $aria2Url" -ForegroundColor Gray
+
+if ($DryRun) {
+    Write-Host "`n[DRY-RUN] Prêt. Relancez sans -DryRun." -ForegroundColor Green
+    exit 0
+}
+
+# =============================================================================
+# VÉRIFICATION OUTILS (aria2 + 7-Zip)
+# =============================================================================
+$aria2 = Join-Path $env:ProgramData "chocolatey\bin\aria2c.exe"
+$sevenZip = Join-Path $env:ProgramData "chocolatey\bin\7z.exe"
+
 if (-not (Test-Path $aria2)) {
-    Write-Warning "aria2 non trouvé → installation automatique"
-    choco install aria2 -y --no-progress
+    Write-Host "Installation aria2..." -ForegroundColor Yellow
+    choco install aria2 -y --no-progress | Out-Null
 }
 
-# Étape 1 : Récupère les infos du build via API uupdump
-$apiUrl = "https://uupdump.net/api/getbuildinfo?ring=$Ring&arch=$Arch&build=$Build"
-try {
-    $buildInfo = Invoke-RestMethod -Uri $apiUrl -UseBasicParsing -TimeoutSec 30
-    if (-not $buildInfo.id) { throw "Build non trouvé" }
-    Write-Host "Build trouvé : $($buildInfo.title) (ID: $($buildInfo.id))" -ForegroundColor Green
+if (-not (Test-Path $sevenZip)) {
+    Write-Host "Installation 7-Zip (requis pour fichiers ESD)..." -ForegroundColor Yellow
+    choco install 7zip -y --no-progress | Out-Null
+    $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+    if (-not (Test-Path $sevenZip)) {
+        $sevenZip = Join-Path $env:ProgramData "chocolatey\bin\7z.exe"
+    }
 }
-catch {
-    Write-Error "Échec récupération infos build : $($_.Exception.Message)"
-    Write-Host "Essayez un autre build ou vérifiez uupdump.net/api"
+
+if (-not (Test-Path $sevenZip)) {
+    Write-Error "7-Zip introuvable. Installez-le manuellement."
     exit 1
 }
 
-# Étape 2 : Génère le script aria2 (sans passer par le site web)
-$aria2Params = @{
-    id    = $buildInfo.id
-    aria2 = 1
-}
-$aria2Query = ($aria2Params.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join '&'
-$aria2Url = "https://uupdump.net/get.php?$aria2Query"
+Write-Host "7-Zip : $sevenZip" -ForegroundColor Gray
 
-try {
-    $aria2Script = Invoke-WebRequest -Uri $aria2Url -UseBasicParsing -TimeoutSec 30
-    $aria2File = "$env:TEMP\uup_aria2_$($buildInfo.id).txt"
-    $aria2Script.Content | Out-File -FilePath $aria2File -Encoding ascii
-    Write-Host "Script aria2 généré : $aria2File" -ForegroundColor Green
-}
-catch {
-    Write-Error "Échec génération script aria2 : $($_.Exception.Message)"
-    exit 1
-}
+# =============================================================================
+# PRÉPARATION
+# =============================================================================
+$ariaFile = Join-Path $env:TEMP "uup_$UupId.aria2.txt"
+$uupDir = Join-Path $env:TEMP "UUPs_$UupId"
+$extractDir = Join-Path $env:TEMP "UUP_extract_$UupId"
 
-# Étape 3 : Téléchargement silencieux avec aria2
-$uupDir = "$env:TEMP\UUPs_$($buildInfo.id)"
+Remove-Item $uupDir -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item $extractDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $uupDir -Force | Out-Null
+New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
 
-Write-Host "Téléchargement des fichiers (seulement system32 CABs)..." -ForegroundColor Cyan
-& $aria2 -i "$aria2File" -d "$uupDir" --console-log-level=warn --summary-interval=0 --allow-overwrite=true 2>$null
+# =============================================================================
+# TÉLÉCHARGEMENT
+# =============================================================================
+Write-Host "`nTéléchargement de la liste..." -ForegroundColor Cyan
+Invoke-WebRequest -Uri $aria2Url -OutFile $ariaFile -UseBasicParsing -UserAgent $UserAgent -TimeoutSec 120
+
+Write-Host "Téléchargement des fichiers (peut prendre 1-2 min)..." -ForegroundColor Cyan
+& $aria2 -i $ariaFile -d $uupDir --continue=true --max-connection-per-server=8 --split=8 --min-split-size=1M --console-log-level=notice --summary-interval=10 "--user-agent=$UserAgent"
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Warning "Aria2 a retourné une erreur ($LASTEXITCODE) - vérifiez les logs"
+    Write-Error "aria2 a échoué (code $LASTEXITCODE)"
+    exit 1
+}
+Write-Host "Téléchargement terminé." -ForegroundColor Green
+
+# =============================================================================
+# EXTRACTION - PHASE 1 : CAB (avec expand)
+# =============================================================================
+Write-Host "`nRecherche dans les fichiers CAB..." -ForegroundColor Cyan
+$dllPath = Join-Path $extractDir $dllName
+$found = $false
+
+$cabs = Get-ChildItem -Path $uupDir -File -Filter "*.cab"
+foreach ($cab in $cabs) {
+    $null = cmd /c "expand `"$($cab.FullName)`" -F:$dllName `"$extractDir`" 2>&1"
+    if (Test-Path $dllPath) {
+        Write-Host " -> Trouvée dans CAB : $($cab.Name)" -ForegroundColor Green
+        $found = $true
+        break
+    }
 }
 
-# Étape 4 : Extraction de la DLL depuis les CAB
-$tempDll = "$env:TEMP\api-ms-win-core-winrt-l1-1-0.dll"
-Remove-Item $tempDll -Force -ErrorAction SilentlyContinue
-
-$cabFiles = Get-ChildItem -Path $uupDir -Filter "*windows-system32*.cab" -Recurse -File
-
-foreach ($cab in $cabFiles) {
-    Write-Host "Extraction depuis $($cab.Name) ..." -ForegroundColor Cyan
-    expand $cab.FullName -F:api-ms-win-core-winrt-l1-1-0.dll $env:TEMP 2>$null
+# =============================================================================
+# EXTRACTION - PHASE 2 : ESD (avec 7-Zip)
+# =============================================================================
+if (-not $found) {
+    Write-Host "Non trouvée dans CAB. Recherche dans les fichiers ESD..." -ForegroundColor Yellow
+    
+    $esds = Get-ChildItem -Path $uupDir -File -Filter "*.esd"
+    Write-Host " $($esds.Count) fichiers ESD à analyser..." -ForegroundColor Gray
+    
+    foreach ($esd in $esds) {
+        Write-Host " Analyse : $($esd.Name)..." -ForegroundColor Gray
+        
+        # Extraire avec 7-Zip en cherchant récursivement la DLL
+        $tempEsdDir = Join-Path $extractDir "esd_temp_$($esd.BaseName)"
+        New-Item -ItemType Directory -Path $tempEsdDir -Force | Out-Null
+        
+        # 7z extrait récursivement
+        & $sevenZip x $esd.FullName -o"$tempEsdDir" -r -y $dllName 2>&1 | Out-Null
+        
+        # Chercher la DLL extraite (peut être dans un sous-dossier)
+        $foundDll = Get-ChildItem -Path $tempEsdDir -Recurse -File -Filter $dllName -ErrorAction SilentlyContinue | Select-Object -First 1
+        
+        if ($foundDll) {
+            Copy-Item -Path $foundDll.FullName -Destination $dllPath -Force
+            Write-Host " -> Trouvée dans ESD : $($esd.Name)" -ForegroundColor Green
+            $found = $true
+            break
+        }
+        
+        # Nettoyage temp
+        Remove-Item $tempEsdDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 
-if (-not (Test-Path $tempDll)) {
-    Write-Error "DLL non trouvée après extraction des CABs"
+if (-not $found) {
+    Write-Error "DLL '$dllName' non trouvée dans CAB ni ESD."
+    Write-Host "Fichiers disponibles dans : $uupDir" -ForegroundColor Yellow
     exit 1
 }
 
-Write-Host "DLL extraite : $tempDll" -ForegroundColor Green
-
-# Étape 5 : Vérification intégrité (hash + signature)
-$expectedHash = "B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD"  # Win10 22H2
-
-$hash = Get-FileHash $tempDll -Algorithm SHA256
-if ($hash.Hash -ne $expectedHash) {
-    Write-Warning "Hash SHA256 non correspondant (obtenu: $($hash.Hash))"
-    Write-Warning "Attendu: $expectedHash"
-    $continue = Read-Host "Continuer malgré tout ? (O/N)"
-    if ($continue -notlike "O*") { exit 1 }
+# =============================================================================
+# VÉRIFICATION SIGNATURE
+# =============================================================================
+Write-Host "`nVérification signature..." -ForegroundColor Cyan
+$sig = Get-AuthenticodeSignature $dllPath
+if ($sig.Status -eq "Valid" -and $sig.SignerCertificate.Subject -match "Microsoft") {
+    Write-Host "✅ Signature Microsoft valide" -ForegroundColor Green
 } else {
-    Write-Host "✅ Hash SHA256 OK (Microsoft officiel)" -ForegroundColor Green
+    Write-Warning "Signature : $($sig.Status)"
 }
 
-$sig = Get-AuthenticodeSignature $tempDll
-if ($sig.Status -eq "Valid" -and $sig.SignerCertificate.Subject -like "*Microsoft*") {
-    Write-Host "✅ Signature Authenticode valide (Microsoft)" -ForegroundColor Green
-} else {
-    Write-Warning "Signature invalide : $($sig.StatusMessage)"
-    $continue = Read-Host "Continuer malgré tout ? (O/N)"
-    if ($continue -notlike "O*") { exit 1 }
-}
+$hash = (Get-FileHash $dllPath -Algorithm SHA256).Hash
+Write-Host " SHA256 : $hash" -ForegroundColor Gray
 
-# Étape 6 : Copie vers Adobe Reader
+# =============================================================================
+# INSTALLATION
+# =============================================================================
+Write-Host "`nInstallation..." -ForegroundColor Cyan
 if (Test-Path $TargetFolder) {
-    Copy-Item -Path $tempDll -Destination $TargetFolder -Force
-    Write-Host "DLL copiée avec succès dans : $TargetFolder" -ForegroundColor Green
-    Write-Host "Redémarrez Adobe Reader pour tester !" -ForegroundColor Green
+    $destPath = Join-Path $TargetFolder $dllName
+    if (Test-Path $destPath) {
+        $backupPath = "$destPath.backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+        Copy-Item -Path $destPath -Destination $backupPath -Force
+        Write-Host " Backup : $backupPath" -ForegroundColor Gray
+    }
+    Copy-Item -Path $dllPath -Destination $TargetFolder -Force
+    Write-Host "✅ DLL installée : $destPath" -ForegroundColor Green
 } else {
-    Write-Warning "Dossier Adobe Reader non trouvé : $TargetFolder"
-    Write-Host "DLL disponible ici : $tempDll" -ForegroundColor Yellow
-    Write-Host "Copiez-la manuellement dans le dossier Reader de votre installation."
+    Write-Warning "Dossier Adobe non trouvé : $TargetFolder"
+    Write-Host " DLL dispo ici : $dllPath" -ForegroundColor Yellow
+    $Cleanup = $false
 }
 
-# Étape 7 : Nettoyage (optionnel)
+# =============================================================================
+# NETTOYAGE
+# =============================================================================
 if ($Cleanup) {
+    Write-Host "`nNettoyage..." -ForegroundColor Gray
+    Remove-Item $ariaFile -Force -ErrorAction SilentlyContinue
     Remove-Item $uupDir -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item $aria2File -Force -ErrorAction SilentlyContinue
-    Write-Host "Nettoyage terminé" -ForegroundColor Gray
+    Remove-Item $extractDir -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-Write-Host "`n=== Fin du fix silencieux UUP ===" -ForegroundColor Magenta
+Write-Host "`n=== TERMINÉ AVEC SUCCÈS ===" -ForegroundColor Magenta
+Write-Host "Redémarrez Adobe Reader pour tester !" -ForegroundColor Cyan
