@@ -88,23 +88,31 @@ Pour les futures versions : incrémentez `<version>` dans le .nuspec, `choco pac
 ## Structure du dépôt
 
 ```
-win7-adobe-reader-winrt-fix-v2/
+PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
+.
+├── FilesSnapshot.xml
+├── Install.txt
 ├── LICENSE
 ├── README.md
+├── _Summary.md
+├── chocolatey
+│   ├── scripts
+│   │   ├── main-fix.ps1
+│   │   ├── rollback-reader-xi.ps1
+│   │   ├── scan-and-verify.ps1
+│   │   ├── uup-extract-dll.ps1
+│   │   └── uup-extract-dll.ps1.bak
+│   ├── tools
+│   │   └── chocolateyInstall.ps1
+│   └── win7-adobe-fix.nuspec
+├── digest.txt
 ├── verified-hashes.txt
-├── .github/
-│   └── workflows/
-│       └── build-and-publish-choco.yml
-├── chocolatey/
-│   ├── win7-adobe-fix.nuspec
-│   └── tools/
-│       └── chocolateyInstall.ps1
-├── scripts/
-│   ├── uup-extract-dll.ps1
-│   ├── scan-and-verify.ps1
-│   ├── rollback-reader-xi.ps1
-│   └── main-fix.ps1
+├── win7-adobe-fix.2.0.0.nupkg
+└── win7-adobe-fix.2.0.1.nupkg
 └── .gitignore
+
+3 directories, 16 files
+
 ```
 
 ## Améliorations futures
@@ -115,4 +123,5 @@ win7-adobe-reader-winrt-fix-v2/
 - Ajout d’un mode « offline » complet (DLL pré-extraite)
 
 Elon approuverait. 😈🚀
+
 
