@@ -108,7 +108,7 @@ PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
 ├── digest.txt
 ├── verified-hashes.txt
 ├── win7-adobe-fix.2.0.0.nupkg
-└── win7-adobe-fix.2.0.1.nupkg
+├──win7-adobe-fix.2.0.1.nupkg
 └── .gitignore
 
 3 directories, 16 files
@@ -123,5 +123,6 @@ PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
 - Ajout d’un mode « offline » complet (DLL pré-extraite)
 
 Elon approuverait. 😈🚀
+
 
 
