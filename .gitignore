@@ -15,9 +15,12 @@ UUPs*/
 UUPs*.zip
 *.aria2
 
-# Chocolatey / builds
+# Dossiers / fichiers temporaires Chocolatey
 *.nupkg
 chocolatey\*.nupkg
+choco*.log
+chocolatey\lib\*
+chocolatey\*.nupkg.sha256
 
 # Dossiers perso / sensibles
 .env
@@ -29,3 +32,10 @@ api-key.txt
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+# Artefacts Chocolatey / tests package
+FilesSnapshot.xml
+Install.txt
+_Summary.md
+digest.txt
+
