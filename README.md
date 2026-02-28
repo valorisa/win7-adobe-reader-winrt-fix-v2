@@ -122,9 +122,4 @@ PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
 - Support Windows 8.1 / versions plus anciennes d’Adobe
 - Ajout d’un mode « offline » complet (DLL pré-extraite)
 
-Valorisa approuve, encadre, teste. 😈🚀
-
-
-
-
-
+**Valorisa** approuve, encadre, teste. 😈🚀
