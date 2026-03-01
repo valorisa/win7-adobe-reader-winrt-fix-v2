@@ -9,6 +9,7 @@ $RECYCLE.BIN/
 *.temp
 *.log
 *.bak
+*.backup
 
 # Téléchargements UUP
 UUPs*/
