@@ -149,26 +149,30 @@ Get-Content .\verified-hashes.txt
 
 ## 📁 Structure du dépôt
 
-```
+```text
 PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
 .
-├── README.md
-├── LICENSE
-├── verified-hashes.txt              # Hashs officiels Microsoft (multi-hash)
-├── chocolatey/
-│   ├── win7-adobe-fix.nuspec        # Spécifications package (v2.0.1)
-│   ├── scripts/
-│   │   ├── main-fix.ps1             # Orchestrateur principal
-│   │   ├── uup-extract-dll.ps1      # Extraction DLL (V6.4 + offline)
-│   │   ├── scan-and-verify.ps1      # Vérification hash + signature (V2.1)
-│   │   ├── rollback-reader-xi.ps1   # Rollback vers Reader XI
-│   │   └── offline/                 # Mode offline (NOUVEAU V2.0.1)
-│   │       └── api-ms-win-core-winrt-l1-1-0.dll
-│   └── tools/
-│       └── chocolateyInstall.ps1    # Script d'installation Chocolatey (robocopy)
-└── .github/
-    └── workflows/
-        └── build-and-publish-choco.yml  # CI/CD automatique
+├── FilesSnapshot.xml              # Snapshot des fichiers Chocolatey (auto-généré)
+├── Install.txt                    # Instructions d'installation rapides
+├── LICENSE                        # Licence MIT du projet
+├── README.md                      # Documentation principale du projet
+├── _Summary.md                    # Résumé/notes internes (optionnel)
+├── chocolatey/                    # 📦 Dossier principal du package Chocolatey
+│   ├── scripts/                   # 🛠️ Scripts PowerShell d'installation et de fix
+│   │   ├── main-fix.ps1           # Orchestrateur principal (lance extraction → vérif → action)
+│   │   ├── offline/               # 💾 Mode offline (DLL pré-vérifiée, pas de téléchargement)
+│   │   │   └── api-ms-win-core-winrt-l1-1-0.dll  # DLL WinRT signée Microsoft (hash validé)
+│   │   ├── rollback-reader-xi.ps1 # Rollback vers Adobe Reader XI 11.0.23 (stable sans WinRT)
+│   │   ├── scan-and-verify.ps1    # Vérification hash SHA256 + signature Authenticode (V2.1 multi-hash)
+│   │   └── uup-extract-dll.ps1    # Extraction DLL depuis UUP dump (V6.4 + offline + UUID Pro)
+│   ├── tools/                     # Outils d'installation Chocolatey
+│   │   └── chocolateyInstall.ps1  # Script d'installation du package (copie via robocopy)
+│   └── win7-adobe-fix.nuspec      # Spécifications du package Chocolatey (v2.0.1)
+├── digest.txt                     # Digest/sha256 de tous les fichiers du repo (vérification intégrité)
+├── verified-hashes.txt            # Hashs officiels Microsoft validés (multi-hash support)
+└── win7-adobe-fix.2.0.1.nupkg     # Package Chocolatey prêt à publier (v2.0.1)
+
+4 directories, 15 files
 ```
 
 ---
@@ -279,5 +283,4 @@ MIT License — Voir [LICENSE](LICENSE) pour les détails.
 - **Documentation** : https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/wiki
 
 
----
 
