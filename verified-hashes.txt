@@ -1,14 +1,50 @@
-# Hashes vérifiés - sources officielles Microsoft / Adobe (2026)
+# =============================================================================
+# verified-hashes.txt - Hashes vérifiés pour Win7 Adobe Reader WinRT Fix
+# Sources officielles Microsoft / Adobe (2026)
+# =============================================================================
 
-# api-ms-win-core-winrt-l1-1-0.dll (32-bit, stub WinRT - extrait Win10 22H2 x86)
+# -----------------------------------------------------------------------------
+# api-ms-win-core-winrt-l1-1-0.dll (32-bit, stub WinRT)
+# Plusieurs versions Microsoft sont acceptées (toutes signées officiellement)
+# -----------------------------------------------------------------------------
+
+# Version 1 : Windows 10 22H2 (build 19041) - Référence principale
 SHA256: B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD
 SHA1:   8A78D39EB9E38C93B3327933A8669EDA76980ECB
 Taille: 13192 octets
-Version File: 10.0.19041.1 (ou similaire)
+Version File: 10.0.19041.1
+Source: Windows 10 22H2 x86 officiel
+Statut: ✅ Validé
 
-# Adobe Reader XI 11.0.23 full installer (en_US)
-AdbeRdr11023_en_US.exe
-SHA256: 0f8e2c9d1a3b4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3   # À recalculer après download réel
-Taille approx: ~45 Mo
+# Version 2 : Windows 10 Technical Preview (build 9904) - Alternative validée
+SHA256: E4C29D4B5496C965B903CAA1722F3A54DB22B95688A10B8A103639BA4B1F999D
+Taille: 19192 octets
+Version File: 10.0.9904.0 (fbl_refactor.141207-1750)
+Source: Windows 10 Technical Preview x86
+Signé: Microsoft Corporation
+VirusTotal: 0/66 détections
+Statut: ✅ Validé par valorisa (2026-02-28)
 
-Note : Mets à jour ce fichier avec les hashes réels après chaque download
+# Version 3 : Autre build Microsoft (si découvert ultérieurement)
+# SHA256: 791844D49E6E3FC1271A2B15B5FE7DDB9FD8C55FDD13E09195F08A1CFFB2582C
+# Note: Hash VirusTotal observé - à valider avant d'ajouter officiellement
+# Statut: ⏳ En attente de validation
+
+# -----------------------------------------------------------------------------
+# Adobe Reader XI 11.0.23 full installer (en_US) - Pour option rollback
+# -----------------------------------------------------------------------------
+
+# AdbeRdr11023_en_US.exe
+# SHA256: 0f8e2c9d1a3b4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3
+# Taille approx: ~45 Mo
+# Note: À recalculer après download réel depuis Adobe Archive
+# Statut: ⏳ En attente de hash réel
+
+# =============================================================================
+# Instructions de maintenance
+# =============================================================================
+# 1. Ajoute uniquement des hashes de DLL signées Microsoft Corporation
+# 2. Vérifie chaque nouvelle version avec scan-and-verify.ps1
+# 3. Documente la source (build Windows, date, validateur)
+# 4. Conserve les anciennes versions pour compatibilité
+# =============================================================================
