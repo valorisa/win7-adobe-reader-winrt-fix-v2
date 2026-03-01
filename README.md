@@ -237,28 +237,36 @@ Get-Content .\verified-hashes.txt
 ## 📁 Structure du dépôt
 
 ```text
-PS C:\Users\bbrod\Projets\win7-adobe-reader-winrt-fix-v2> tree
-.
-├── README.md                      # Documentation principale du projet (V2.0.1)
-├── LICENSE                        # Licence MIT du projet
-├── verified-hashes.txt            # Hashs officiels Microsoft validés (multi-hash)
-├── chocolatey/
-│   ├── win7-adobe-fix.nuspec      # Spécifications package Chocolatey (v2.0.1)
-│   ├── scripts/
-│   │   ├── main-fix.ps1           # Orchestrateur principal
-│   │   ├── offline/               # Mode offline (NOUVEAU V2.0.1)
-│   │   │   └── api-ms-win-core-winrt-l1-1-0.dll  # DLL WinRT signée Microsoft
-│   │   ├── rollback-reader-xi.ps1 # Rollback vers Reader XI
-│   │   ├── scan-and-verify.ps1    # Vérification hash + signature (V2.1)
-│   │   └── uup-extract-dll.ps1    # Extraction DLL (V6.4 + offline)
-│   └── tools/
-│       └── chocolateyInstall.ps1  # Script d'installation (robocopy)
-└── .github/
-    └── workflows/
-        └── build-and-publish-choco.yml  # CI/CD automatique
+📦 win7-adobe-reader-winrt-fix-v2/
+│
+├── 📄 DOCUMENTATION PUBLIQUE
+│   ├── README.md              ← Ce que voient les utilisateurs
+│   ├── ALT_README.md          ← Version alternative (peut être fusionnée)
+│   └── LICENSE                ← Licence MIT du code
+│
+├── 📦 PACKAGE CHOCOLATEY
+│   ├── win7-adobe-fix.nuspec  ← Métadonnées (version, tags, URLs)
+│   ├── tools/                 ← requis par Chocolatey
+│   │   ├── chocolateyInstall.ps1  ← Script d'installation
+│   │   ├── LICENSE.txt        ← Requis binaire (CPMR0005)
+│   │   └── VERIFICATION.txt   ← Requis binaire (CPMR0006)
+│   └── scripts/               ← Tes scripts personnalisés
+│       ├── main-fix.ps1       ← Orchestrateur
+│       ├── offline/           ← Mode offline (NOUVEAU V2.0.1)
+│       │   └── *.dll          ← DLL pré-vérifiée
+│       ├── rollback-reader-xi.ps1
+│       ├── scan-and-verify.ps1
+│       └── uup-extract-dll.ps1
+│
+├── 🔐 SÉCURITÉ & VÉRIFICATION
+│   ├── verified-hashes.txt    ← Hashs Microsoft de référence
+│   └── icon.png               ← Icône du package
+│
+└── 📦 BUILD ARTIFACT (à ignorer dans Git)
+    └── win7-adobe-fix.2.0.1.nupkg  ← Généré par `choco pack`
 ```
 
-**Total :** 4 dossiers, 11 fichiers (aucun fichier temporaire .bak)
+**Total :** 4 dossiers, 15 fichiers (aucun fichier temporaire .bak)
 
 ---
 
@@ -385,4 +393,5 @@ MIT License — Voir [LICENSE](LICENSE) pour les détails.
 - **Chocolatey** : https://community.chocolatey.org/packages/win7-adobe-fix
 
 ---
+
 
