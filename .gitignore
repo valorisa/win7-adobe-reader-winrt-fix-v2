@@ -10,6 +10,7 @@ $RECYCLE.BIN/
 *.log
 *.bak
 *.backup
+*.xml
 
 # Téléchargements UUP
 UUPs*/
