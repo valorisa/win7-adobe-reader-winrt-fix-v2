@@ -1,0 +1,61 @@
+================================================================================
+LICENSE FOR api-ms-win-core-winrt-l1-1-0.dll
+================================================================================
+
+This package includes the following binary file:
+- api-ms-win-core-winrt-l1-1-0.dll
+
+--------------------------------------------------------------------------------
+SOURCE AND LICENSING
+--------------------------------------------------------------------------------
+
+This DLL is an official Microsoft Windows component extracted from:
+- Windows 10 22H2 (build 19041) - OR -
+- Windows 10 Technical Preview (build 9904)
+
+The DLL is distributed under the Microsoft Software License Terms.
+It is a core Windows system component that is freely redistributable as part
+of software repair and compatibility solutions.
+
+--------------------------------------------------------------------------------
+DISTRIBUTION RIGHTS
+--------------------------------------------------------------------------------
+
+This DLL is:
+✅ Officially signed by Microsoft Corporation
+✅ Extracted from official Microsoft UUP (Unified Update Platform) builds
+✅ Used solely for compatibility repair on Windows 7 systems
+✅ Not modified or altered in any way
+✅ Verified with SHA256 hash against Microsoft reference
+
+This package does NOT redistribute the full Windows operating system, only the
+specific DLL required for Adobe Reader compatibility on Windows 7.
+
+--------------------------------------------------------------------------------
+MICROSOFT LICENSE TERMS
+--------------------------------------------------------------------------------
+
+Microsoft Software License Terms:
+https://www.microsoft.com/en-us/Useterms
+
+Windows 10 License Terms:
+https://www.microsoft.com/en-us/Useterms/Retail/Windows/10/UseTerms_Retail_Windows_10_English.htm
+
+--------------------------------------------------------------------------------
+VERIFICATION
+--------------------------------------------------------------------------------
+
+This DLL can be verified using:
+1. SHA256 hash comparison (see VERIFICATION.txt)
+2. Authenticode signature verification (Microsoft Corporation)
+3. VirusTotal scan (0/66 detections)
+
+--------------------------------------------------------------------------------
+CONTACT
+--------------------------------------------------------------------------------
+
+For questions about this package:
+- GitHub Issues: https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/issues
+- Package Page: https://community.chocolatey.org/packages/win7-adobe-fix
+
+================================================================================

@@ -1,0 +1,69 @@
+================================================================================
+VERIFICATION OF api-ms-win-core-winrt-l1-1-0.dll
+================================================================================
+
+PACKAGE: win7-adobe-fix
+VERSION: 2.0.1
+DATE: March 2026
+MAINTAINER: valorisa
+
+--------------------------------------------------------------------------------
+HOW THIS DLL WAS OBTAINED
+--------------------------------------------------------------------------------
+
+This DLL was obtained through MULTIPLE VERIFIED SOURCES:
+
+SOURCE 1 - UUP dump (Primary):
+URL: https://uupdump.net/
+Method: Extracted from official Microsoft Windows 10 builds through UUP dump
+Builds used:
+  1. Windows 10 22H2 (build 19041) x86 - Professional edition - French (fr-fr)
+     UUID: 0e85a309-5d76-4452-86c5-f9e17c3c2344
+  2. Windows 10 Technical Preview (build 9904) x86 - Alternative validated
+
+SOURCE 2 - DLL-Files.com (Secondary verification):
+URL: https://fr.dll-files.com/api-ms-win-core-winrt-l1-1-0.dll.html
+Download Date: February 2026
+Verified by: valorisa
+
+--------------------------------------------------------------------------------
+DLL FILE INFORMATION
+--------------------------------------------------------------------------------
+
+Version:        10.0.9904.0 (fbl_refactor.141207-1750)
+Architecture:   32-bit (x86)
+File Size:      18.7 KB (19,192 bytes)
+Language:       U.S. English
+Company:        Microsoft Corporation
+Description:    ApiSet Stub DLL
+Product:        Microsoft® Windows® Operating System
+
+--------------------------------------------------------------------------------
+HASH VERIFICATION
+--------------------------------------------------------------------------------
+
+Accepted SHA256 hashes (multi-hash support):
+
+VERSION 1 - Windows 10 22H2 (build 19041):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SHA256: B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD
+SHA1:   8A78D39EB9E38C93B3327933A8669EDA76980ECB
+Size:   13,192 bytes
+Version File: 10.0.19041.1
+Source: Windows 10 22H2 x86 officiel (UUP dump)
+Status: ✅ Validé
+
+VERSION 2 - Windows 10 Technical Preview (build 9904):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SHA256: E4C29D4B5496C965B903CAA1722F3A54DB22B95688A10B8A103639BA4B1F999D
+SHA1:   3457c85b646cc67d30349be9d74ab4f60e29ed2f
+MD5:    a298b63db9cacb6183c0d0161392f494
+Size:   19,192 bytes (18.7 KB)
+Version File: 10.0.9904.0 (fbl_refactor.141207-1750)
+Source: Windows 10 Technical Preview x86 (dll-files.com + UUP dump)
+Status: ✅ Validé par valorisa (2026-02-28)
+
+Verification command:
+```powershell
+Get-FileHash ".\chocolatey\scripts\offline\api-ms-win-core-winrt-l1-1-0.dll" -Algorithm SHA256
+```

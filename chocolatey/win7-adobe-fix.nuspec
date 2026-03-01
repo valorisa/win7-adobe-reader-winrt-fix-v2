@@ -14,7 +14,7 @@
     <releaseNotes>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/blob/main/README.md#changelog</releaseNotes>
 	<licenseUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/blob/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <tags>windows7 adobe reader fix winrt dll uupdump silent chocolatey</tags>
+    <tags>windows7 adobe reader fix winrt dll uupdump silent</tags>
     <copyright>© 2026 valorisa</copyright>
   </metadata>
 
