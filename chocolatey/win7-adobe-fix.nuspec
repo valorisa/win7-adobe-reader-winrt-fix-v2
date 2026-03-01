@@ -9,7 +9,10 @@
     <description>Correction automatique du plantage Adobe Reader sur Windows 7 (manque api-ms-win-core-winrt-l1-1-0.dll). Extrait la DLL officielle via UUP dump silencieux ou rollback vers Reader XI.</description>
     <summary>Fix api-ms-win-core-winrt-l1-1-0.dll pour Adobe Reader sur Win7</summary>
     <projectUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2</projectUrl>
-    <licenseUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/blob/main/LICENSE</licenseUrl>
+    <packageSourceUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2</packageSourceUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/valorisa/win7-adobe-reader-winrt-fix-v2@main/icon.png</iconUrl>
+    <releaseNotes>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/blob/main/README.md#changelog</releaseNotes>
+	<licenseUrl>https://github.com/valorisa/win7-adobe-reader-winrt-fix-v2/blob/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>windows7 adobe reader fix winrt dll uupdump silent chocolatey</tags>
     <copyright>© 2026 valorisa</copyright>
