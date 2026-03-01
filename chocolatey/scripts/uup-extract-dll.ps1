@@ -26,7 +26,10 @@ $ProgressPreference = "SilentlyContinue"
 # ✅ CORRECTION CRITIQUE : URL sans espaces traînants
 $siteBase = "https://uupdump.net"
 $dllName  = "api-ms-win-core-winrt-l1-1-0.dll"
-$expectedHash = "B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD"
+$acceptedHashes = @(
+    "B30F6D5E1328144C41F1116F9E3A50F458FC455B16900ED9B48CEAE0771696BD",  # Win10 22H2
+    "E4C29D4B5496C965B903CAA1722F3A54DB22B95688A10B8A103639BA4B1F999D"   # Win10 TP
+)
 
 Write-Host "`n=== UUP Dump V6.4 - Fix Adobe Reader WinRT (x86) ===" -ForegroundColor Cyan
 Write-Host "DLL cible : $dllName" -ForegroundColor Gray
@@ -44,7 +47,7 @@ if ($ForceOffline -or (Test-Path $offlineDll)) {
     Write-Host "`n[Mode Offline] Vérification de la DLL locale..." -ForegroundColor Cyan
     if (Test-Path $offlineDll) {
         $offlineHash = (Get-FileHash $offlineDll -Algorithm SHA256).Hash
-        if ($offlineHash -eq $expectedHash) {
+        if ($offlineHash -in $acceptedHashes) {
             Write-Host "✅ Hash vérifié - DLL locale valide" -ForegroundColor Green
             $extractDir = Join-Path $env:TEMP "UUP_extract_offline"
             New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
