@@ -240,33 +240,46 @@ Get-Content .\verified-hashes.txt
 📦 win7-adobe-reader-winrt-fix-v2/
 │
 ├── 📄 DOCUMENTATION PUBLIQUE
-│   ├── README.md              ← Ce que voient les utilisateurs
+│   ├── README.md              ← Documentation principale (V2.0.1)
 │   ├── ALT_README.md          ← Version alternative (peut être fusionnée)
+│   ├── ROADMAP.md             ← Feuille de route V2.0.2+ (NOUVEAU)
 │   └── LICENSE                ← Licence MIT du code
 │
 ├── 📦 PACKAGE CHOCOLATEY
 │   ├── win7-adobe-fix.nuspec  ← Métadonnées (version, tags, URLs)
-│   ├── tools/                 ← requis par Chocolatey
-│   │   ├── chocolateyInstall.ps1  ← Script d'installation
-│   │   ├── LICENSE.txt        ← Requis binaire (CPMR0005)
-│   │   └── VERIFICATION.txt   ← Requis binaire (CPMR0006)
+│   ├── tools/                 ← Requis par Chocolatey
+│   │   ├── chocolateyInstall.ps1  ← Script d'installation (robocopy)
+│   │   ├── LICENSE.txt        ← Requis binaire (CPMR0005) ✅
+│   │   └── VERIFICATION.txt   ← Requis binaire (CPMR0006) ✅
 │   └── scripts/               ← Tes scripts personnalisés
-│       ├── main-fix.ps1       ← Orchestrateur
-│       ├── offline/           ← Mode offline (NOUVEAU V2.0.1)
-│       │   └── *.dll          ← DLL pré-vérifiée
+│       ├── main-fix.ps1       ← Orchestrateur principal
+│       ├── offline/           ← Mode offline (NOUVEAU V2.0.1) 
+│       │   └── api-ms-win-core-winrt-l1-1-0.dll  ← DLL pré-vérifiée
 │       ├── rollback-reader-xi.ps1
-│       ├── scan-and-verify.ps1
-│       └── uup-extract-dll.ps1
+│       ├── scan-and-verify.ps1    ← V2.1 multi-hash
+│       └── uup-extract-dll.ps1    ← V6.4 + offline
 │
 ├── 🔐 SÉCURITÉ & VÉRIFICATION
-│   ├── verified-hashes.txt    ← Hashs Microsoft de référence
-│   └── icon.png               ← Icône du package
+│   ├── verified-hashes.txt    ← Hashs Microsoft de référence (2 versions)
+│   └── icon.png               ← Icône du package (128x128)
 │
-└── 📦 BUILD ARTIFACT (à ignorer dans Git)
-    └── win7-adobe-fix.2.0.1.nupkg  ← Généré par `choco pack`
+├── 📊 SUIVI & TEMPLATE (NOUVEAU)
+│   ├── docs/
+│   │   └── USER_FEEDBACK.md   ← Tableau de suivi des retours
+│   └── .github/
+│       ├── ISSUE_TEMPLATE/
+│       │   ├── feature_request.md
+│       │   ├── bug_report.md
+│       │   └── documentation.md
+│       └── workflows/
+│           └── build-and-publish-choco.yml  ← CI/CD automatique
+│
+└──  BUILD ARTIFACT (à ignorer dans Git)
+    ├── win7-adobe-fix.2.0.1.nupkg  ← Généré par `choco pack`
+    └── digest.txt                  ← Digest gitingest (optionnel)
 ```
 
-**Total :** 4 dossiers, 15 fichiers (aucun fichier temporaire .bak)
+**Total :** 5 dossiers, 18 fichiers (aucun fichier temporaire .bak)
 
 ---
 
@@ -393,5 +406,6 @@ MIT License — Voir [LICENSE](LICENSE) pour les détails.
 - **Chocolatey** : https://community.chocolatey.org/packages/win7-adobe-fix
 
 ---
+
 
 
