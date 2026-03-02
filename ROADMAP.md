@@ -53,34 +53,12 @@
 
 ## 📅 Calendrier estimé
 
-┌─────────────────────────────────────────────────────────────┐
-│ MARS 2026 │
-│ ✅ V2.0.1 soumise à Chocolatey │
-│ ⏳ Attente approbation (2-5 jours) │
-│ 📢 Annonce forums Windows 7 │
-└─────────────────────────────────────────────────────────────┘
-↓
-┌─────────────────────────────────────────────────────────────┐
-│ AVRIL-MAI 2026 (Q2) │
-│ 🛠️ Développement V2.0.2 │
-│ • UUP silencieux (F-001) │
-│ • Multi-langues (F-002) │
-│ • Mode portable (F-003) │
-│ 🧪 Tests internes │
-└─────────────────────────────────────────────────────────────┘
-↓
-┌─────────────────────────────────────────────────────────────┐
-│ JUIN 2026 │
-│ 🚀 Publication V2.0.2 │
-│ 📝 Mise à jour documentation │
-│ 📢 Annonce communauté │
-└─────────────────────────────────────────────────────────────┘
-↓
-┌─────────────────────────────────────────────────────────────┐
-│ JUILLET-DÉCEMBRE 2026 (Q3-Q4) │
-│ 💡 Développement V2.1.0 (selon retours utilisateurs) │
-│ 🔍 Priorisation basée sur issues GitHub │
-└─────────────────────────────────────────────────────────────┘
+| Période | Phase | Activités | Statut |
+| ------- | ----- | --------- | ------ |
+| **Mars 2026** | V2.0.1 | • Soumission Chocolatey<br>• Attente approbation (2-5 jours)<br>• Annonce forums Windows 7 | ✅ En cours |
+| **Avril-Mai 2026**<br>(Q2) | V2.0.2 | • UUP silencieux (F-001)<br>• Multi-langues (F-002)<br>• Mode portable (F-003)<br>• Tests internes | 📋 Planifié |
+| **Juin 2026** | Publication V2.0.2 | • Mise à jour documentation<br>• Annonce communauté | ⏳ À venir |
+| **Juillet-Décembre 2026**<br>(Q3-Q4) | V2.1.0 | • Développement selon retours utilisateurs<br>• Priorisation basée sur issues GitHub | 💡 En réflexion |
 
 
 ---
@@ -139,5 +117,6 @@
 | Documentation 100% à jour | Continu | ✅ Objectif permanent |
 
 ---
+
 
 *Document maintenu par @valorisa — Dernière révision : 02 Mars 2026*
